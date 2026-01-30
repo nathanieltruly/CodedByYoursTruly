@@ -61,8 +61,12 @@
       border: none;
       cursor: pointer;
       margin: 8px;
-      transition: transform 0.2s ease;
       position: relative;
+      transition: transform 0.2s ease;
+    }
+
+    button#noBtn {
+      transition: left 0.3s ease, top 0.3s ease; /* smooth movement */
     }
 
     button:active { transform: scale(0.9); }
@@ -148,7 +152,7 @@
       if(current===2){ current=3; updateUI(); return; }
       if(current===questions.length-1){
         card.innerHTML=`
-          <h1>YO YOU CLICKED YES</h1>
+          <h1>YO YOU CLICKED YES!</h1>
           <p>Rhiolin, you just passed the survey ❤️</p>
           <p>I am truly happy now :D</p>
           <button id="revealBtn">Open your reward 🎁</button>
@@ -171,23 +175,18 @@
       }
     });
 
-    // Move the final No button randomly on hover or touch
+    // Smooth moving final No button
     function moveNoButton(){
       const x = Math.random()*(window.innerWidth-120);
       const y = Math.random()*(window.innerHeight-60);
       noBtn.style.position="absolute";
-      noBtn.style.left=x+"px";
-      noBtn.style.top=y+"px";
+      noBtn.style.left = x+"px";
+      noBtn.style.top = y+"px";
       errorMsg.innerHTML=`<div class="error">❌ Uncaught TypeError: ValentineResponse is undefined<br>at love.js:14:7</div>`;
     }
 
-    // Only final No button moves
-    noBtn.addEventListener("mouseover", () => {
-      if(current===questions.length-1) moveNoButton();
-    });
-    noBtn.addEventListener("touchstart", () => {
-      if(current===questions.length-1) moveNoButton();
-    });
+    noBtn.addEventListener("mouseover", () => { if(current===questions.length-1) moveNoButton(); });
+    noBtn.addEventListener("touchstart", () => { if(current===questions.length-1) moveNoButton(); });
 
     noBtn.addEventListener("click",()=>{
       if(current===questions.length-1){
