@@ -140,7 +140,6 @@
       document.body.addEventListener(evt, startMusic, { once: true });
     });
 
-    // Questions
     const questions = [
       "Do you have a microwave?",
       "Would you still talk to me if I stole your fries?",
@@ -149,7 +148,6 @@
       "Rhiolin, will you be my Valentine?"
     ];
 
-    // Progress text
     const progressText = [
       "0% serious",
       "25% serious",
@@ -178,39 +176,22 @@
     }
 
     yesBtn.addEventListener("click", () => {
-      // Branch after Q3
       if (current === 2) {
-        current = 3; // show Q3b
+        current = 3; // Q3b branch
         updateUI();
         return;
       }
 
       if (current === questions.length - 1) {
-        // Final Valentine Yes → hearts + personal message + secret reward
         card.innerHTML = `
-          <h1>YAYYY 💘🥰</h1>
+          <h1>YO YOU CLICKED YES</h1>
           <p>Rhiolin, you just passed the survey ❤️</p>
-          <p>You made me so happy! 😄</p>
+          <p>I am truly happy now :D</p>
           <button id="revealBtn">Open your reward 🎁</button>
           <div id="finalMessage" style="margin-top:12px;"></div>
         `;
         createHearts(45);
         twemoji.parse(document.body, { folder: 'svg', ext: '.svg' });
-
-        // Secret message logic with fade-in
-        const revealBtn = document.getElementById("revealBtn");
-        const finalMessage = document.getElementById("finalMessage");
-        revealBtn.addEventListener("click", () => {
-          finalMessage.innerHTML = "<strong class='fade-in'>You just made me happier than LeBron has ever ❤️🏀</strong>";
-          revealBtn.style.display = "none";
-
-          // Trigger fade-in
-          const fadeText = finalMessage.querySelector(".fade-in");
-          setTimeout(() => {
-            fadeText.classList.add("show");
-            twemoji.parse(document.body, { folder: 'svg', ext: '.svg' });
-          }, 50);
-        });
         return;
       }
 
@@ -218,27 +199,43 @@
       updateUI();
     });
 
-    ["mouseover", "touchstart", "click"].forEach(event => {
-      noBtn.addEventListener(event, () => {
-        // Only moving No button on FINAL Valentine question
-        if (current === questions.length - 1) {
-          const x = Math.random() * (window.innerWidth - 120);
-          const y = Math.random() * (window.innerHeight - 60);
-          noBtn.style.left = x + "px";
-          noBtn.style.top = y + "px";
+    // Secret reward click handler
+    card.addEventListener("click", (e) => {
+      if (e.target && e.target.id === "revealBtn") {
+        const finalMessage = document.getElementById("finalMessage");
+        if (!finalMessage) return;
 
-          errorMsg.innerHTML = `
-            <div class="error">
-              ❌ Uncaught TypeError: ValentineResponse is undefined<br>
-              at love.js:14:7
-            </div>
-          `;
-        } else {
-          // For silly / intermediate questions, just go to next question
-          current++;
-          updateUI();
-        }
-      });
+        finalMessage.innerHTML = "<strong class='fade-in'>You just made me happier than LeBron has ever ❤️🏀</strong>";
+        e.target.style.display = "none";
+
+        const fadeText = finalMessage.querySelector(".fade-in");
+        setTimeout(() => {
+          fadeText.classList.add("show");
+          twemoji.parse(document.body, { folder: 'svg', ext: '.svg' });
+        }, 50);
+      }
+    });
+
+    // No button click logic
+    noBtn.addEventListener("click", () => {
+      if (current === questions.length - 1) {
+        // Final Valentine No: move + fake error
+        const x = Math.random() * (window.innerWidth - 120);
+        const y = Math.random() * (window.innerHeight - 60);
+        noBtn.style.left = x + "px";
+        noBtn.style.top = y + "px";
+
+        errorMsg.innerHTML = `
+          <div class="error">
+            ❌ Uncaught TypeError: ValentineResponse is undefined<br>
+            at love.js:14:7
+          </div>
+        `;
+      } else {
+        // Q1-Q3b: click just advances question
+        current++;
+        updateUI();
+      }
     });
 
     function createHearts(amount) {
@@ -253,7 +250,6 @@
       }
     }
 
-    // Initial Twemoji parse
     twemoji.parse(document.body, { folder: 'svg', ext: '.svg' });
   </script>
 
