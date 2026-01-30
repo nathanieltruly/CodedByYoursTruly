@@ -2,17 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Very Serious Survey 😌</title>
+  <title>Valentine Survey 💖</title>
+
+  <!-- Twemoji for iOS-style emojis -->
+  <script src="https://twemoji.maxcdn.com/v/latest/twemoji.min.js" crossorigin="anonymous"></script>
 
   <style>
     * { box-sizing: border-box; }
-
     body {
-
-      <audio id="bgMusic" loop>
-  <source src="https://cdn.pixabay.com/download/audio/2022/08/02/audio_8c1c9b8a57.mp3" type="audio/mpeg">
-</audio>
-
       margin: 0;
       height: 100vh;
       font-family: "Segoe UI", sans-serif;
@@ -27,11 +24,12 @@
       background: white;
       padding: 35px 25px;
       border-radius: 25px;
-      width: 350px;
+      width: 360px;
       text-align: center;
       box-shadow: 0 15px 40px rgba(0,0,0,0.25);
       animation: popIn 0.8s ease;
       z-index: 2;
+      position: relative;
     }
 
     @keyframes popIn {
@@ -41,7 +39,6 @@
 
     h1 { color: #ff4d6d; margin-bottom: 10px; }
     p { font-size: 16px; }
-
     .progress-container {
       width: 100%;
       background: #eee;
@@ -69,17 +66,8 @@
     }
 
     button:active { transform: scale(0.9); }
-
-    #yesBtn {
-      background: #ff4d6d;
-      color: white;
-      box-shadow: 0 5px 15px rgba(255,77,109,0.5);
-    }
-
-    #noBtn {
-      background: #ddd;
-      position: absolute;
-    }
+    #yesBtn { background: #ff4d6d; color: white; box-shadow: 0 5px 15px rgba(255,77,109,0.5); }
+    #noBtn { background: #ddd; position: absolute; }
 
     .error {
       margin-top: 10px;
@@ -112,6 +100,11 @@
 </head>
 <body>
 
+  <!-- Elevator chill music -->
+  <audio id="bgMusic" loop>
+    <source src="https://cdn.pixabay.com/download/audio/2022/08/02/audio_8c1c9b8a57.mp3" type="audio/mpeg">
+  </audio>
+
   <div class="card" id="card">
     <h1 id="title">Quick Survey 📝</h1>
 
@@ -128,30 +121,20 @@
   </div>
 
   <script>
-
     const music = document.getElementById("bgMusic");
     function startMusic() {
-  music.volume = 0.3;
-  music.play().catch(() => {});
-}
+      music.volume = 0.3;
+      music.play().catch(() => {});
+    }
+    ["click", "touchstart", "keydown"].forEach(evt => {
+      document.body.addEventListener(evt, startMusic, { once: true });
+    });
 
-["click", "touchstart", "keydown"].forEach(evt => {
-  document.body.addEventListener(evt, startMusic, { once: true });
-});
-
-
-// iPad/Safari requires user interaction
-document.body.addEventListener("click", () => {
-  music.volume = 0.3; // chill, not loud
-  music.play().catch(() => {});
-}, { once: true });
-
-    // ✨ EDIT THESE QUESTIONS ✨
     const questions = [
-      "Serious question #1: Do you have a microwave?",
-      "Serious question #2: Would you still talk to me if I stole your fries?",
-      "Serious question #3: Would you be mad at me if I chose a Lebron game over a date?",
-      "Final question ❤️: Will you be my Valentine?"
+      "Serious question #1: Is our \"[inside joke #1]\" still the funniest thing ever?",
+      "Serious question #2: Would you still talk to me if I stole your fries? 🍟",
+      "Serious question #3: Are we legally obligated to laugh when one of us says something dumb?",
+      "Final question ❤️: Rhiolin, will you be my Valentine?"
     ];
 
     const progressText = [
@@ -162,7 +145,6 @@ document.body.addEventListener("click", () => {
     ];
 
     let current = 0;
-
     const title = document.getElementById("title");
     const question = document.getElementById("question");
     const yesBtn = document.getElementById("yesBtn");
@@ -183,14 +165,25 @@ document.body.addEventListener("click", () => {
 
     yesBtn.addEventListener("click", () => {
       if (current === questions.length - 1) {
+        // Valentine Yes → hearts + personal message + secret reward button
         card.innerHTML = `
           <h1>YAYYY 💘🥰</h1>
-          <p>
-            You just passed the survey.<br>
-            Happy Valentine’s ❤️
-          </p>
+          <p>Rhiolin, you just passed the survey ❤️</p>
+          <p>You made me so happy! 😄</p>
+          <button id="revealBtn">Open your reward 🎁</button>
+          <div id="finalMessage" style="margin-top:12px;"></div>
         `;
         createHearts(45);
+        twemoji.parse(document.body, { folder: 'svg', ext: '.svg' });
+
+        // Secret message logic
+        const revealBtn = document.getElementById("revealBtn");
+        const finalMessage = document.getElementById("finalMessage");
+        revealBtn.addEventListener("click", () => {
+          finalMessage.innerHTML = "<strong>You just made me happier than LeBron has ever ❤️🏀</strong>";
+          revealBtn.style.display = "none";
+          twemoji.parse(document.body, { folder: 'svg', ext: '.svg' });
+        });
       } else {
         current++;
         updateUI();
@@ -229,6 +222,9 @@ document.body.addEventListener("click", () => {
         setTimeout(() => heart.remove(), 6000);
       }
     }
+
+    // Initial Twemoji parse
+    twemoji.parse(document.body, { folder: 'svg', ext: '.svg' });
   </script>
 
 </body>
