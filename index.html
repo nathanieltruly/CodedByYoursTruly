@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Be My Valentine ❤️</title>
+  <title>Very Serious Survey 😌</title>
 
   <style>
     * { box-sizing: border-box; }
@@ -18,39 +18,40 @@
       overflow: hidden;
     }
 
-    /* Floating hearts */
-    .heart {
-      position: absolute;
-      font-size: 20px;
-      animation: floatUp 6s linear infinite;
-      opacity: 0.7;
-      pointer-events: none;
-    }
-
-    @keyframes floatUp {
-      0% { transform: translateY(100vh) scale(0.8); opacity: 0; }
-      50% { opacity: 0.8; }
-      100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
-    }
-
     .card {
       background: white;
       padding: 35px 25px;
       border-radius: 25px;
-      width: 330px;
+      width: 350px;
       text-align: center;
       box-shadow: 0 15px 40px rgba(0,0,0,0.25);
-      animation: popIn 1s ease;
+      animation: popIn 0.8s ease;
       z-index: 2;
     }
 
     @keyframes popIn {
-      from { transform: scale(0.5); opacity: 0; }
+      from { transform: scale(0.6); opacity: 0; }
       to { transform: scale(1); opacity: 1; }
     }
 
-    h1 { color: #ff4d6d; }
+    h1 { color: #ff4d6d; margin-bottom: 10px; }
     p { font-size: 16px; }
+
+    .progress-container {
+      width: 100%;
+      background: #eee;
+      border-radius: 10px;
+      margin: 15px 0;
+      height: 12px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: #ff4d6d;
+      transition: width 0.4s ease;
+    }
 
     button {
       padding: 12px 22px;
@@ -76,9 +77,9 @@
     }
 
     .error {
-      color: #ff4d6d;
-      font-weight: bold;
       margin-top: 10px;
+      font-family: monospace;
+      color: #ff4d6d;
       animation: shake 0.3s;
     }
 
@@ -89,66 +90,109 @@
       75% { transform: translateX(-5px); }
       100% { transform: translateX(0); }
     }
+
+    .heart {
+      position: absolute;
+      font-size: 20px;
+      animation: floatUp 6s linear infinite;
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(100vh); opacity: 0; }
+      100% { transform: translateY(-10vh); opacity: 0.8; }
+    }
   </style>
 </head>
 <body>
 
-  <!-- Background Music -->
-  <audio id="bgMusic" loop>
-    <!-- Replace this link with YOUR song if you want -->
-    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_9b60f56d6f.mp3" type="audio/mpeg">
-  </audio>
-
   <div class="card" id="card">
-    <h1>Hey, my gorgeous girl ❤️</h1>
-    <p>
-      <!-- ✨ EDIT THESE LINES ✨ -->
-      <strong>Rhiolin</strong>, from talking everyday to
-      <em>building a genuine connection</em>…
-      <br><br>
-      Will you be my Valentine?
-    </p>
+    <h1 id="title">Quick Survey 📝</h1>
 
-    <button id="yesBtn">Yes 💖</button>
-    <button id="noBtn">No 💔</button>
+    <div class="progress-container">
+      <div class="progress-bar" id="progress"></div>
+    </div>
+
+    <p id="question"></p>
+
+    <button id="yesBtn">Yes ✅</button>
+    <button id="noBtn">No ❌</button>
 
     <div id="errorMsg"></div>
   </div>
 
   <script>
-    const noBtn = document.getElementById("noBtn");
+    // ✨ EDIT THESE QUESTIONS ✨
+    const questions = [
+      "Serious question #1: Do you have a microwave?",
+      "Serious question #2: Would you still talk to me if I stole your fries?",
+      "Serious question #3: Would you be mad at me if I chose a Lebron game over a date?",
+      "Final question ❤️: Will you be my Valentine?"
+    ];
+
+    const progressText = [
+      "0% serious",
+      "33% serious",
+      "66% serious",
+      "100% serious 😳"
+    ];
+
+    let current = 0;
+
+    const title = document.getElementById("title");
+    const question = document.getElementById("question");
     const yesBtn = document.getElementById("yesBtn");
-    const card = document.getElementById("card");
+    const noBtn = document.getElementById("noBtn");
+    const progress = document.getElementById("progress");
     const errorMsg = document.getElementById("errorMsg");
-    const music = document.getElementById("bgMusic");
+    const card = document.getElementById("card");
 
-    // Start music on first interaction (iPad-safe)
-    document.body.addEventListener("click", () => {
-      music.play().catch(() => {});
-    }, { once: true });
+    question.innerText = questions[current];
+    progress.style.width = "0%";
 
-    // No button: escape + fake error
-    ["mouseover", "touchstart", "click"].forEach(event => {
-      noBtn.addEventListener(event, () => {
-        const x = Math.random() * (window.innerWidth - 120);
-        const y = Math.random() * (window.innerHeight - 60);
-        noBtn.style.left = x + "px";
-        noBtn.style.top = y + "px";
+    function updateUI() {
+      question.innerText = questions[current];
+      progress.style.width = `${(current / (questions.length - 1)) * 100}%`;
+      title.innerText = progressText[current];
+      errorMsg.innerHTML = "";
+    }
 
-        errorMsg.innerHTML = `<div class="error">❌ Error 404: "No" not found</div>`;
-      });
+    yesBtn.addEventListener("click", () => {
+      if (current === questions.length - 1) {
+        card.innerHTML = `
+          <h1>YAYYY 💘🥰</h1>
+          <p>
+            You just passed the survey.<br>
+            Happy Valentine’s ❤️
+          </p>
+        `;
+        createHearts(45);
+      } else {
+        current++;
+        updateUI();
+      }
     });
 
-    // Yes button celebration
-    yesBtn.addEventListener("click", () => {
-      card.innerHTML = `
-        <h1>YO YOU CLICKED YES!</h1>
-        <p>
-          Thank you for this opportunity :D<br>
-          Happy Valentine’s ❤️
-        </p>
-      `;
-      createHearts(40);
+    ["mouseover", "touchstart", "click"].forEach(event => {
+      noBtn.addEventListener(event, () => {
+        if (current === questions.length - 1) {
+          const x = Math.random() * (window.innerWidth - 120);
+          const y = Math.random() * (window.innerHeight - 60);
+          noBtn.style.left = x + "px";
+          noBtn.style.top = y + "px";
+
+          errorMsg.innerHTML = `
+            <div class="error">
+              ❌ Uncaught TypeError: ValentineResponse is undefined<br>
+              at love.js:14:7
+            </div>
+          `;
+        } else {
+          current++;
+          updateUI();
+        }
+      });
     });
 
     function createHearts(amount) {
@@ -159,12 +203,9 @@
         heart.style.left = Math.random() * 100 + "vw";
         heart.style.animationDuration = 3 + Math.random() * 4 + "s";
         document.body.appendChild(heart);
-
-        setTimeout(() => heart.remove(), 7000);
+        setTimeout(() => heart.remove(), 6000);
       }
     }
-
-    setInterval(() => createHearts(3), 900);
   </script>
 
 </body>
