@@ -193,6 +193,7 @@
         `;
         createHearts(45);
         twemoji.parse(document.body, { folder: 'svg', ext: '.svg' });
+        startMovingNo(); // start constant movement
         return;
       }
 
@@ -217,34 +218,38 @@
       }
     });
 
-    // No button click/hover for FINAL question
-    function moveNoButton() {
-      const x = Math.random() * (window.innerWidth - 120);
-      const y = Math.random() * (window.innerHeight - 60);
-      noBtn.style.left = x + "px";
-      noBtn.style.top = y + "px";
-
-      errorMsg.innerHTML = `
-        <div class="error">
-          ❌ Uncaught TypeError: ValentineResponse is undefined<br>
-          at love.js:14:7
-        </div>
-      `;
+    // Move final No button constantly
+    function startMovingNo() {
+      function move() {
+        if (!document.getElementById("noBtn")) return;
+        const x = Math.random() * (window.innerWidth - 120);
+        const y = Math.random() * (window.innerHeight - 60);
+        noBtn.style.left = x + "px";
+        noBtn.style.top = y + "px";
+        errorMsg.innerHTML = `
+          <div class="error">
+            ❌ Uncaught TypeError: ValentineResponse is undefined<br>
+            at love.js:14:7
+          </div>
+        `;
+        requestAnimationFrame(move);
+      }
+      move();
     }
 
     // No button behavior
     noBtn.addEventListener("click", () => {
       if (current === questions.length - 1) {
-        moveNoButton();
+        // click does nothing but keeps error message active
+        errorMsg.innerHTML = `
+          <div class="error">
+            ❌ Uncaught TypeError: ValentineResponse is undefined<br>
+            at love.js:14:7
+          </div>
+        `;
       } else {
         current++;
         updateUI();
-      }
-    });
-
-    noBtn.addEventListener("mouseover", () => {
-      if (current === questions.length - 1) {
-        moveNoButton();
       }
     });
 
