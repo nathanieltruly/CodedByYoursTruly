@@ -130,6 +130,15 @@
   <script>
 
     const music = document.getElementById("bgMusic");
+    function startMusic() {
+  music.volume = 0.3;
+  music.play().catch(() => {});
+}
+
+["click", "touchstart", "keydown"].forEach(evt => {
+  document.body.addEventListener(evt, startMusic, { once: true });
+});
+
 
 // iPad/Safari requires user interaction
 document.body.addEventListener("click", () => {
