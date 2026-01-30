@@ -97,15 +97,15 @@
       100% { transform: translateY(-10vh); opacity: 0.8; }
     }
 
+    /* Fade-in for secret reward */
     .fade-in {
-  opacity: 0;
-  transition: opacity 1.5s ease-in-out;
-}
+      opacity: 0;
+      transition: opacity 1.5s ease-in-out;
+    }
 
-.fade-in.show {
-  opacity: 1;
-}
-
+    .fade-in.show {
+      opacity: 1;
+    }
   </style>
 </head>
 <body>
@@ -180,8 +180,7 @@
     yesBtn.addEventListener("click", () => {
       // Branch after Q3
       if (current === 2) {
-        // If she clicks Yes on "LeBron game over date", show follow-up Q3b
-        current = 3;
+        current = 3; // show Q3b
         updateUI();
         return;
       }
@@ -198,21 +197,20 @@
         createHearts(45);
         twemoji.parse(document.body, { folder: 'svg', ext: '.svg' });
 
-        // Secret message logic
+        // Secret message logic with fade-in
         const revealBtn = document.getElementById("revealBtn");
         const finalMessage = document.getElementById("finalMessage");
-       revealBtn.addEventListener("click", () => {
-  finalMessage.innerHTML = "<strong class='fade-in'>You just made me happier than LeBron has ever ❤️🏀</strong>";
-  revealBtn.style.display = "none";
+        revealBtn.addEventListener("click", () => {
+          finalMessage.innerHTML = "<strong class='fade-in'>You just made me happier than LeBron has ever ❤️🏀</strong>";
+          revealBtn.style.display = "none";
 
-  // Add the .show class to trigger fade-in
-  const fadeText = finalMessage.querySelector(".fade-in");
-  setTimeout(() => {
-    fadeText.classList.add("show");
-    twemoji.parse(document.body, { folder: 'svg', ext: '.svg' });
-  }, 50); // tiny delay ensures transition triggers
-});
-
+          // Trigger fade-in
+          const fadeText = finalMessage.querySelector(".fade-in");
+          setTimeout(() => {
+            fadeText.classList.add("show");
+            twemoji.parse(document.body, { folder: 'svg', ext: '.svg' });
+          }, 50);
+        });
         return;
       }
 
