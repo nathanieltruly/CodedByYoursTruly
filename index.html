@@ -114,7 +114,7 @@
   <script>
     const music = document.getElementById("bgMusic");
     function startMusic() { music.volume = 0.3; music.play().catch(() => {}); }
-    ["click", "touchstart", "keydown"].forEach(evt => { document.body.addEventListener(evt, startMusic, { once:true }); });
+    ["click","touchstart","keydown"].forEach(evt => document.body.addEventListener(evt,startMusic,{once:true}));
 
     const questions = [
       "Do you have a microwave?",
@@ -142,16 +142,15 @@
       progress.style.width = `${(current/(progressText.length-1))*100}%`;
       title.innerText = progressText[current];
       errorMsg.innerHTML = "";
-      if(current === questions.length-1) startMovingNo(); // start constant No button movement
     }
 
     yesBtn.addEventListener("click", () => {
-      if(current === 2){ current = 3; updateUI(); return; }
-      if(current === questions.length-1){
-        card.innerHTML = `
+      if(current===2){ current=3; updateUI(); return; }
+      if(current===questions.length-1){
+        card.innerHTML=`
           <h1>YO YOU CLICKED YES</h1>
           <p>Rhiolin, you just passed the survey ❤️</p>
-          <p>I am happy now truly</p>
+          <p>I am truly happy now :D</p>
           <button id="revealBtn">Open your reward 🎁</button>
           <div id="finalMessage" style="margin-top:12px;"></div>
         `;
@@ -172,24 +171,27 @@
       }
     });
 
-    function startMovingNo(){
-      function move(){
-        if(current !== questions.length-1) return;
-        const x = Math.random()*(window.innerWidth-120);
-        const y = Math.random()*(window.innerHeight-60);
-        noBtn.style.position="absolute";
-        noBtn.style.left = x+"px";
-        noBtn.style.top = y+"px";
-        errorMsg.innerHTML = `<div class="error">❌ Uncaught TypeError: ValentineResponse is undefined<br>at love.js:14:7</div>`;
-        requestAnimationFrame(move);
-      }
-      move();
+    // Move the final No button randomly on hover or touch
+    function moveNoButton(){
+      const x = Math.random()*(window.innerWidth-120);
+      const y = Math.random()*(window.innerHeight-60);
+      noBtn.style.position="absolute";
+      noBtn.style.left=x+"px";
+      noBtn.style.top=y+"px";
+      errorMsg.innerHTML=`<div class="error">❌ Uncaught TypeError: ValentineResponse is undefined<br>at love.js:14:7</div>`;
     }
+
+    // Only final No button moves
+    noBtn.addEventListener("mouseover", () => {
+      if(current===questions.length-1) moveNoButton();
+    });
+    noBtn.addEventListener("touchstart", () => {
+      if(current===questions.length-1) moveNoButton();
+    });
 
     noBtn.addEventListener("click",()=>{
       if(current===questions.length-1){
-        // click does nothing, error keeps showing
-        errorMsg.innerHTML = `<div class="error">❌ Uncaught TypeError: ValentineResponse is undefined<br>at love.js:14:7</div>`;
+        errorMsg.innerHTML=`<div class="error">❌ Uncaught TypeError: ValentineResponse is undefined<br>at love.js:14:7</div>`;
       }else{
         current++;
         updateUI();
@@ -198,7 +200,7 @@
 
     function createHearts(amount){
       for(let i=0;i<amount;i++){
-        const heart = document.createElement("div");
+        const heart=document.createElement("div");
         heart.className="heart";
         heart.innerText="❤️";
         heart.style.left=Math.random()*100+"vw";
