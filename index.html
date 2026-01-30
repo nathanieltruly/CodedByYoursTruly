@@ -8,6 +8,11 @@
     * { box-sizing: border-box; }
 
     body {
+
+      <audio id="bgMusic" loop>
+  <source src="https://cdn.pixabay.com/download/audio/2022/08/02/audio_8c1c9b8a57.mp3" type="audio/mpeg">
+</audio>
+
       margin: 0;
       height: 100vh;
       font-family: "Segoe UI", sans-serif;
@@ -123,6 +128,15 @@
   </div>
 
   <script>
+
+    const music = document.getElementById("bgMusic");
+
+// iPad/Safari requires user interaction
+document.body.addEventListener("click", () => {
+  music.volume = 0.3; // chill, not loud
+  music.play().catch(() => {});
+}, { once: true });
+
     // ✨ EDIT THESE QUESTIONS ✨
     const questions = [
       "Serious question #1: Do you have a microwave?",
