@@ -67,7 +67,7 @@
     }
 
     button#noBtn {
-      transition: left 0.3s ease, top 0.3s ease; /* smooth movement */
+      transition: left 0.3s ease, top 0.3s ease;
     }
 
     button:active { transform: scale(0.9); }
@@ -155,7 +155,7 @@
         card.innerHTML=`
           <h1>YO YOU CLICKED YES!</h1>
           <p>Rhiolin, you just passed the survey ❤️</p>
-          <p>I am now happy truly :D</p>
+          <p>I am now truly happy :D</p>
           <button id="revealBtn">Open your reward 🎁</button>
           <div id="finalMessage" style="margin-top:12px;"></div>
         `;
@@ -176,29 +176,35 @@
       }
     });
 
-    // Bounce-away final No button
+    // Bounce-away final No button, always stays visible
     function bounceNoButton(event){
       const btnWidth = noBtn.offsetWidth;
       const btnHeight = noBtn.offsetHeight;
+      const margin = 20;
 
-      const margin = 20; // small margin from edges
       const viewportWidth = window.innerWidth - btnWidth - margin;
       const viewportHeight = window.innerHeight - btnHeight - margin;
 
+      // cursor/finger position
+      const cursorX = event.clientX || (event.touches && event.touches[0].clientX) || window.innerWidth/2;
+      const cursorY = event.clientY || (event.touches && event.touches[0].clientY) || window.innerHeight/2;
+
+      // button center
       const rect = noBtn.getBoundingClientRect();
-      let newX = rect.left;
-      let newY = rect.top;
+      const btnCenterX = rect.left + btnWidth/2;
+      const btnCenterY = rect.top + btnHeight/2;
 
-      // calculate direction away from cursor/finger
-      const cursorX = event.clientX || (event.touches && event.touches[0].clientX) || rect.left;
-      const cursorY = event.clientY || (event.touches && event.touches[0].clientY) || rect.top;
+      // vector away from cursor
+      let dx = btnCenterX - cursorX;
+      let dy = btnCenterY - cursorY;
 
-      const dx = rect.left + btnWidth/2 - cursorX;
-      const dy = rect.top + btnHeight/2 - cursorY;
+      // normalize and scale
+      const distance = Math.sqrt(dx*dx + dy*dy) || 1;
+      dx = dx / distance * 120; // move ~120px
+      dy = dy / distance * 120;
 
-      // move button away, scale distance
-      newX += dx * 0.5;
-      newY += dy * 0.5;
+      let newX = rect.left + dx;
+      let newY = rect.top + dy;
 
       // clamp inside viewport
       newX = Math.min(Math.max(margin, newX), viewportWidth);
