@@ -96,6 +96,16 @@
       0% { transform: translateY(100vh); opacity: 0; }
       100% { transform: translateY(-10vh); opacity: 0.8; }
     }
+
+    .fade-in {
+  opacity: 0;
+  transition: opacity 1.5s ease-in-out;
+}
+
+.fade-in.show {
+  opacity: 1;
+}
+
   </style>
 </head>
 <body>
@@ -130,17 +140,21 @@
       document.body.addEventListener(evt, startMusic, { once: true });
     });
 
+    // Questions
     const questions = [
-      "Serious question #1: Do you have a microwave??",
-      "Serious question #2: Would you still talk to me if I stole your fries?",
-      "Serious question #3: Would you be mad at me if I picked a Lebron game over a date?",
-      "Final question ❤️: Rhiolin, will you be my Valentine?"
+      "Do you have a microwave?",
+      "Would you still talk to me if I stole your fries?",
+      "Would you be mad if I picked a LeBron game over a date?",
+      "Are you sure? C'mon it's LeBron though?",
+      "Rhiolin, will you be my Valentine?"
     ];
 
+    // Progress text
     const progressText = [
       "0% serious",
-      "33% serious",
-      "66% serious",
+      "25% serious",
+      "50% serious",
+      "75% serious",
       "100% serious 😳"
     ];
 
@@ -158,18 +172,26 @@
 
     function updateUI() {
       question.innerText = questions[current];
-      progress.style.width = `${(current / (questions.length - 1)) * 100}%`;
+      progress.style.width = `${(current / (progressText.length - 1)) * 100}%`;
       title.innerText = progressText[current];
       errorMsg.innerHTML = "";
     }
 
     yesBtn.addEventListener("click", () => {
+      // Branch after Q3
+      if (current === 2) {
+        // If she clicks Yes on "LeBron game over date", show follow-up Q3b
+        current = 3;
+        updateUI();
+        return;
+      }
+
       if (current === questions.length - 1) {
-        // Valentine Yes → hearts + personal message + secret reward button
+        // Final Valentine Yes → hearts + personal message + secret reward
         card.innerHTML = `
-          <h1>YO YOU CLICKED YES</h1>
+          <h1>YAYYY 💘🥰</h1>
           <p>Rhiolin, you just passed the survey ❤️</p>
-          <p>I am now truly happy</p>
+          <p>You made me so happy! 😄</p>
           <button id="revealBtn">Open your reward 🎁</button>
           <div id="finalMessage" style="margin-top:12px;"></div>
         `;
@@ -179,19 +201,28 @@
         // Secret message logic
         const revealBtn = document.getElementById("revealBtn");
         const finalMessage = document.getElementById("finalMessage");
-        revealBtn.addEventListener("click", () => {
-          finalMessage.innerHTML = "<strong>You just made me happier than LeBron has ever ❤️🏀</strong>";
-          revealBtn.style.display = "none";
-          twemoji.parse(document.body, { folder: 'svg', ext: '.svg' });
-        });
-      } else {
-        current++;
-        updateUI();
+       revealBtn.addEventListener("click", () => {
+  finalMessage.innerHTML = "<strong class='fade-in'>You just made me happier than LeBron has ever ❤️🏀</strong>";
+  revealBtn.style.display = "none";
+
+  // Add the .show class to trigger fade-in
+  const fadeText = finalMessage.querySelector(".fade-in");
+  setTimeout(() => {
+    fadeText.classList.add("show");
+    twemoji.parse(document.body, { folder: 'svg', ext: '.svg' });
+  }, 50); // tiny delay ensures transition triggers
+});
+
+        return;
       }
+
+      current++;
+      updateUI();
     });
 
     ["mouseover", "touchstart", "click"].forEach(event => {
       noBtn.addEventListener(event, () => {
+        // Only moving No button on FINAL Valentine question
         if (current === questions.length - 1) {
           const x = Math.random() * (window.innerWidth - 120);
           const y = Math.random() * (window.innerHeight - 60);
@@ -205,6 +236,7 @@
             </div>
           `;
         } else {
+          // For silly / intermediate questions, just go to next question
           current++;
           updateUI();
         }
