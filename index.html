@@ -17,6 +17,7 @@
       align-items: center;
       justify-content: center;
       overflow: hidden;
+      position: relative;
     }
 
     .card {
@@ -154,7 +155,7 @@
         card.innerHTML=`
           <h1>YO YOU CLICKED YES!</h1>
           <p>Rhiolin, you just passed the survey ❤️</p>
-          <p>I am truly happy now :D</p>
+          <p>I am now happy truly :D</p>
           <button id="revealBtn">Open your reward 🎁</button>
           <div id="finalMessage" style="margin-top:12px;"></div>
         `;
@@ -175,23 +176,43 @@
       }
     });
 
-    // Smooth, safe moving final No button
-    function moveNoButton(){
+    // Bounce-away final No button
+    function bounceNoButton(event){
       const btnWidth = noBtn.offsetWidth;
       const btnHeight = noBtn.offsetHeight;
 
-      const x = Math.random()*(window.innerWidth - btnWidth);
-      const y = Math.random()*(window.innerHeight - btnHeight);
+      const margin = 20; // small margin from edges
+      const viewportWidth = window.innerWidth - btnWidth - margin;
+      const viewportHeight = window.innerHeight - btnHeight - margin;
+
+      const rect = noBtn.getBoundingClientRect();
+      let newX = rect.left;
+      let newY = rect.top;
+
+      // calculate direction away from cursor/finger
+      const cursorX = event.clientX || (event.touches && event.touches[0].clientX) || rect.left;
+      const cursorY = event.clientY || (event.touches && event.touches[0].clientY) || rect.top;
+
+      const dx = rect.left + btnWidth/2 - cursorX;
+      const dy = rect.top + btnHeight/2 - cursorY;
+
+      // move button away, scale distance
+      newX += dx * 0.5;
+      newY += dy * 0.5;
+
+      // clamp inside viewport
+      newX = Math.min(Math.max(margin, newX), viewportWidth);
+      newY = Math.min(Math.max(margin, newY), viewportHeight);
 
       noBtn.style.position = "absolute";
-      noBtn.style.left = x + "px";
-      noBtn.style.top = y + "px";
+      noBtn.style.left = newX + "px";
+      noBtn.style.top = newY + "px";
 
       errorMsg.innerHTML = `<div class="error">❌ Uncaught TypeError: ValentineResponse is undefined<br>at love.js:14:7</div>`;
     }
 
-    noBtn.addEventListener("mouseover", () => { if(current===questions.length-1) moveNoButton(); });
-    noBtn.addEventListener("touchstart", () => { if(current===questions.length-1) moveNoButton(); });
+    noBtn.addEventListener("mouseover", (e) => { if(current===questions.length-1) bounceNoButton(e); });
+    noBtn.addEventListener("touchstart", (e) => { if(current===questions.length-1) bounceNoButton(e); });
 
     noBtn.addEventListener("click",()=>{
       if(current===questions.length-1){
