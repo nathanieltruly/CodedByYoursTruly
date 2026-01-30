@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <title>Valentine Survey 💖</title>
 
-  <!-- Twemoji for iOS-style emojis -->
   <script src="https://twemoji.maxcdn.com/v/latest/twemoji.min.js" crossorigin="anonymous"></script>
 
   <style>
@@ -77,14 +76,6 @@
       animation: shake 0.3s;
     }
 
-    @keyframes shake {
-      0% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      50% { transform: translateX(5px); }
-      75% { transform: translateX(-5px); }
-      100% { transform: translateX(0); }
-    }
-
     .heart {
       position: absolute;
       font-size: 20px;
@@ -98,48 +89,32 @@
       100% { transform: translateY(-10vh); opacity: 0.8; }
     }
 
-    /* Fade-in for secret reward */
-    .fade-in {
-      opacity: 0;
-      transition: opacity 1.5s ease-in-out;
-    }
-
-    .fade-in.show {
-      opacity: 1;
-    }
+    .fade-in { opacity: 0; transition: opacity 1.5s ease-in-out; }
+    .fade-in.show { opacity: 1; }
   </style>
 </head>
 <body>
 
-  <!-- Elevator chill music -->
   <audio id="bgMusic" loop>
     <source src="https://cdn.pixabay.com/download/audio/2022/08/02/audio_8c1c9b8a57.mp3" type="audio/mpeg">
   </audio>
 
   <div class="card" id="card">
     <h1 id="title">Quick Survey 📝</h1>
-
     <div class="progress-container">
       <div class="progress-bar" id="progress"></div>
     </div>
 
     <p id="question"></p>
-
     <button id="yesBtn">Yes ✅</button>
     <button id="noBtn">No ❌</button>
-
     <div id="errorMsg"></div>
   </div>
 
   <script>
     const music = document.getElementById("bgMusic");
-    function startMusic() {
-      music.volume = 0.3;
-      music.play().catch(() => {});
-    }
-    ["click", "touchstart", "keydown"].forEach(evt => {
-      document.body.addEventListener(evt, startMusic, { once: true });
-    });
+    function startMusic() { music.volume = 0.3; music.play().catch(() => {}); }
+    ["click", "touchstart", "keydown"].forEach(evt => { document.body.addEventListener(evt, startMusic, { once:true }); });
 
     const questions = [
       "Do you have a microwave?",
@@ -149,15 +124,9 @@
       "Rhiolin, will you be my Valentine?"
     ];
 
-    const progressText = [
-      "0% serious",
-      "25% serious",
-      "50% serious",
-      "75% serious",
-      "100% serious 😳"
-    ];
-
+    const progressText = ["0% serious","25% serious","50% serious","75% serious","100% serious 😳"];
     let current = 0;
+
     const title = document.getElementById("title");
     const question = document.getElementById("question");
     const yesBtn = document.getElementById("yesBtn");
@@ -167,105 +136,80 @@
     const card = document.getElementById("card");
 
     question.innerText = questions[current];
-    progress.style.width = "0%";
 
     function updateUI() {
       question.innerText = questions[current];
-      progress.style.width = `${(current / (progressText.length - 1)) * 100}%`;
+      progress.style.width = `${(current/(progressText.length-1))*100}%`;
       title.innerText = progressText[current];
       errorMsg.innerHTML = "";
+      if(current === questions.length-1) startMovingNo(); // start constant No button movement
     }
 
     yesBtn.addEventListener("click", () => {
-      if (current === 2) {
-        current = 3; // Q3b branch
-        updateUI();
-        return;
-      }
-
-      if (current === questions.length - 1) {
+      if(current === 2){ current = 3; updateUI(); return; }
+      if(current === questions.length-1){
         card.innerHTML = `
-          <h1>YAYYY 💘🥰</h1>
+          <h1>YO YOU CLICKED YES</h1>
           <p>Rhiolin, you just passed the survey ❤️</p>
-          <p>You made me so happy! 😄</p>
+          <p>I am happy now truly</p>
           <button id="revealBtn">Open your reward 🎁</button>
           <div id="finalMessage" style="margin-top:12px;"></div>
         `;
         createHearts(45);
-        twemoji.parse(document.body, { folder: 'svg', ext: '.svg' });
-        startMovingNo(); // start constant movement
+        twemoji.parse(document.body,{folder:'svg',ext:'.svg'});
         return;
       }
-
       current++;
       updateUI();
     });
 
-    // Secret reward click handler
-    card.addEventListener("click", (e) => {
-      if (e.target && e.target.id === "revealBtn") {
+    card.addEventListener("click",(e)=>{
+      if(e.target && e.target.id==="revealBtn"){
         const finalMessage = document.getElementById("finalMessage");
-        if (!finalMessage) return;
-
-        finalMessage.innerHTML = "<strong class='fade-in'>You just made me happier than LeBron has ever ❤️🏀</strong>";
-        e.target.style.display = "none";
-
-        const fadeText = finalMessage.querySelector(".fade-in");
-        setTimeout(() => {
-          fadeText.classList.add("show");
-          twemoji.parse(document.body, { folder: 'svg', ext: '.svg' });
-        }, 50);
+        finalMessage.innerHTML="<strong class='fade-in'>You just made me happier than LeBron has ever ❤️🏀</strong>";
+        e.target.style.display="none";
+        setTimeout(()=>{finalMessage.querySelector(".fade-in").classList.add("show"); twemoji.parse(document.body,{folder:'svg',ext:'.svg'});},50);
       }
     });
 
-    // Move final No button constantly
-    function startMovingNo() {
-      function move() {
-        if (!document.getElementById("noBtn")) return;
-        const x = Math.random() * (window.innerWidth - 120);
-        const y = Math.random() * (window.innerHeight - 60);
-        noBtn.style.left = x + "px";
-        noBtn.style.top = y + "px";
-        errorMsg.innerHTML = `
-          <div class="error">
-            ❌ Uncaught TypeError: ValentineResponse is undefined<br>
-            at love.js:14:7
-          </div>
-        `;
+    function startMovingNo(){
+      function move(){
+        if(current !== questions.length-1) return;
+        const x = Math.random()*(window.innerWidth-120);
+        const y = Math.random()*(window.innerHeight-60);
+        noBtn.style.position="absolute";
+        noBtn.style.left = x+"px";
+        noBtn.style.top = y+"px";
+        errorMsg.innerHTML = `<div class="error">❌ Uncaught TypeError: ValentineResponse is undefined<br>at love.js:14:7</div>`;
         requestAnimationFrame(move);
       }
       move();
     }
 
-    // No button behavior
-    noBtn.addEventListener("click", () => {
-      if (current === questions.length - 1) {
-        // click does nothing but keeps error message active
-        errorMsg.innerHTML = `
-          <div class="error">
-            ❌ Uncaught TypeError: ValentineResponse is undefined<br>
-            at love.js:14:7
-          </div>
-        `;
-      } else {
+    noBtn.addEventListener("click",()=>{
+      if(current===questions.length-1){
+        // click does nothing, error keeps showing
+        errorMsg.innerHTML = `<div class="error">❌ Uncaught TypeError: ValentineResponse is undefined<br>at love.js:14:7</div>`;
+      }else{
         current++;
         updateUI();
       }
     });
 
-    function createHearts(amount) {
-      for (let i = 0; i < amount; i++) {
+    function createHearts(amount){
+      for(let i=0;i<amount;i++){
         const heart = document.createElement("div");
-        heart.className = "heart";
-        heart.innerText = "❤️";
-        heart.style.left = Math.random() * 100 + "vw";
-        heart.style.animationDuration = 3 + Math.random() * 4 + "s";
+        heart.className="heart";
+        heart.innerText="❤️";
+        heart.style.left=Math.random()*100+"vw";
+        heart.style.animationDuration=3+Math.random()*4+"s";
         document.body.appendChild(heart);
-        setTimeout(() => heart.remove(), 6000);
+        setTimeout(()=>heart.remove(),6000);
       }
     }
 
-    twemoji.parse(document.body, { folder: 'svg', ext: '.svg' });
+    twemoji.parse(document.body,{folder:'svg',ext:'.svg'});
+    updateUI();
   </script>
 
 </body>
